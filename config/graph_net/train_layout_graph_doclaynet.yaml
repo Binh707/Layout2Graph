@@ -20,7 +20,7 @@ trainer:
   scheduler:
     scheduler_type: stairs
     warmup_epochs: 1
-  save_dir: doclaynet/
+  save_dir: /content/drive/MyDrive/Project/Fujinet/Fujinet_LayoutAnalysis/Data/DocLayNet/Checkpoints
   tensorboard_dir: doclaynet/tensorboard/
 datasets:
   train:
