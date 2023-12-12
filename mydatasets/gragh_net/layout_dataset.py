@@ -24,22 +24,30 @@ class GraphLayoutDataset(Dataset):
 
     def __init__(self, data_root, label_root, **kwargs):
         super(GraphLayoutDataset, self).__init__()
+        data_root = data_root[0]
+        label_root = label_root[0]
         self.file_path_list = []
         self.label_path_list = []
-        for i, data_path in enumerate(label_root):
-            label_path_list = get_file_path_list(data_path, ['json'])
-            for label_path in label_path_list:
-                self.label_path_list.append(label_path)
-                img_path = label_path.replace(data_path,
-                                              data_root[i]).replace('/graph_labels/',
-                                                                    '/ocr_results_images/').replace('.json', '.jpg')
-                if not os.path.exists(img_path):
-                    img_path = img_path.replace('/ocr_results_images/', '/images/')
-                if not os.path.exists(img_path):
-                    img_path = img_path.replace('.jpg', '.png')
-                if not os.path.exists(img_path):
-                    img_path = img_path.replace('.png', '.jpeg')
-                self.file_path_list.append(img_path)
+
+        print('\n\n---- begin ---- :')
+        print(data_root)
+        print(label_root)
+        print('---- end ---- :\n\n')
+
+        with open(label_root, 'rb') as f:
+            self.graph_labels = pickle.load(f)
+
+        for label_path in self.graph_labels.keys():
+            self.label_path_list.append(label_path)
+            img_path = data_root + '/PNG/' + label_path + '.png'
+            # if not os.path.exists(img_path):
+            #     img_path = img_path.replace('/ocr_results_images/', '/images/')
+            # if not os.path.exists(img_path):
+            #     img_path = img_path.replace('.jpg', '.png')
+            # if not os.path.exists(img_path):
+            #     img_path = img_path.replace('.png', '.jpeg')
+            self.file_path_list.append(img_path)
+
         self.label_list = [None] * len(self.label_path_list)
         self.crop_img_flag = kwargs['crop_img_flag']
         self.encode_text_type = kwargs.get('encode_text_type', None)
@@ -53,24 +61,25 @@ class GraphLayoutDataset(Dataset):
     def __getitem__(self, index):
         image = Image.open(self.file_path_list[index]).convert("RGB")
         if self.label_list[index] is None:
-            with open(self.label_path_list[index], 'r') as f:
-                try:
-                    json_data = json.load(f)
-                except:
-                    logger.warning('bad json:{}'.format(self.label_path_list[index]))
-                    return self[index - 1]
-                cell_box, cell_lloc, cell_content, encode_text = [], [], [], []
-                for item in json_data['img_data_list']:
-                    # TODO 可以过滤一些文本框不去预测
-                    if len(item['content']) > 0 and item['text_coor'][2] > item['text_coor'][0] and item['text_coor'][3] > item['text_coor'][1]:
-                        cell_box.append(item['text_coor'])
-                        cell_lloc.append(item['label'])
-                        cell_content.append(item['content'])
-                        if self.encode_text_type == 'spacy':
-                            textout = self.text_emb(item['content']).vector
-                            encode_text.append(textout)
-                if len(cell_box) == 0:
-                    return self[index - 1]
+            # with open(self.label_path_list[index], 'r') as f:
+            #     try:
+            #         json_data = json.load(f)
+            #     except:
+            #         logger.warning('bad json:{}'.format(self.label_path_list[index]))
+            #         return self[index - 1]
+            json_data = self.graph_labels[self.label_path_list[index]]
+            cell_box, cell_lloc, cell_content, encode_text = [], [], [], []
+            for item in json_data['img_data_list']:
+                if len(item['content']) > 0 and item['text_coor'][2] > item['text_coor'][0] and item['text_coor'][3] > item['text_coor'][1]:
+                    cell_box.append(item['text_coor'])
+                    cell_lloc.append(item['label'])
+                    cell_content.append(item['content'])
+                    if self.encode_text_type == 'spacy':
+                        textout = self.text_emb(item['content']).vector
+                        encode_text.append(textout)
+            if len(cell_box) == 0:
+                return self[index - 1]
+
             if self.crop_img_flag:
                 cell_box = np.array(cell_box)
                 min_x = cell_box[:, [0, 2]].min()
