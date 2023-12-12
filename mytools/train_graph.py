@@ -38,7 +38,7 @@ def init_args():
     )
     parser.add_argument(
         '--use_accelerate',
-        default=False,
+        default=True,
         type=bool,
     )
     args = parser.parse_args()
@@ -51,12 +51,12 @@ def main(args):
     config.update({'phase': args.phase,
                    'use_accelerate': args.use_accelerate})
     experiment_instance = getattr(experiment, get_experiment_name(args.experiment_name))(config)
-    # if args.phase == 'train':
-    #     experiment_instance.train()
-    # elif args.phase == 'predict':
-    #     experiment_instance.predict()
-    # elif args.phase == 'evaluate':
-    #     experiment_instance.evaluate()
+    if args.phase == 'train':
+        experiment_instance.train()
+    elif args.phase == 'predict':
+        experiment_instance.predict()
+    elif args.phase == 'evaluate':
+        experiment_instance.evaluate()
 
 
 if __name__ == '__main__':

@@ -29,10 +29,10 @@ class GraphLayoutDataset(Dataset):
         self.file_path_list = []
         self.label_path_list = []
 
-        print('\n\n---- begin ---- :')
-        print(data_root)
-        print(label_root)
-        print('---- end ---- :\n\n')
+        # print('\n\n---- begin ---- :')
+        # print(data_root)
+        # print(label_root)
+        # print('---- end ---- :\n\n')
 
         with open(label_root, 'rb') as f:
             self.graph_labels = pickle.load(f)
