@@ -38,11 +38,11 @@ class BaseExperiment(object):
         self.init_device(config)
         self.init_random_seed(config)
         self.init_model(config)
-        self.init_dataset(config)
-        self.init_trainer_args(config)
-        self.init_predictor_args(config)
-        self.init_evaluator_args(config)
-        self.prepare_accelerator()
+        # self.init_dataset(config)
+        # self.init_trainer_args(config)
+        # self.init_predictor_args(config)
+        # self.init_evaluator_args(config)
+        # self.prepare_accelerator()
 
     """
         Main Block
