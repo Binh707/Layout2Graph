@@ -299,9 +299,13 @@ class GraphLayoutExperiment(BaseExperiment):
             Node_F1_MICRO, Pair_F1_MACRO = result['acc']
             if (not self.args.trainer.save_best or (self.args.trainer.save_best
                                                     and Pair_F1_MACRO > self.args.trainer.best_eval_result)) and self.args.device.is_master:
+                print()
                 checkpoint_name = "{}_epoch{}_step{}_lr{:e}_average_loss{:.5f}_NodeF1MICRO{:.5f}_PairF1MACRO{:.5f}.pth".format(
                     self.experiment_name, epoch, global_step, current_lr, loss_meter.avg, Node_F1_MICRO, Pair_F1_MACRO)
                 checkpoint_path = os.path.join(self.args.trainer.save_dir, checkpoint_name)
+                print('------' * 5)
+                print(checkpoint_path)
+                print('------' * 5)
                 self.save_model(checkpoint_path, epoch=epoch, global_step=global_step)
                 if Node_F1_MICRO > self.args.trainer.best_eval_result[0]:
                     self.args.trainer.best_eval_result[0] = Node_F1_MICRO
@@ -325,6 +329,9 @@ class GraphLayoutExperiment(BaseExperiment):
                 checkpoint_name = "{}_epoch{}_step{}_lr{:e}_average_loss{:.5f}_NodeF1MICRO{:.5f}_PairF1MACRO{:.5f}.pth".format(
                     self.experiment_name, epoch, global_step, current_lr, loss_meter.avg, Node_F1_MICRO, Pair_F1_MACRO)
                 checkpoint_path = os.path.join(self.args.trainer.save_dir, checkpoint_name)
+                print('------' * 5)
+                print(checkpoint_path)
+                print('------' * 5)
                 self.save_model(checkpoint_path, epoch=epoch, global_step=global_step)
                 if Node_F1_MICRO > self.args.trainer.best_eval_result[0]:
                     self.args.trainer.best_eval_result[0] = Node_F1_MICRO
