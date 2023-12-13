@@ -29,7 +29,7 @@ datasets:
         - /content/DocLayNet
       label_root:
         - /content/drive/MyDrive/Project/Fujinet/Fujinet_LayoutAnalysis/Data/DocLayNet/DocLayNet_core_graph_labels/train_graph_labels.pkl
-    batch_size: 16
+    batch_size: 2
     collate_fn:
       aug_flag: false
   eval:
